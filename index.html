@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0"
+    />
+  </head>
+  <body>
+    <!-- NEU: Kamera-Video im Hintergrund -->
+    <video id="cam" autoplay muted playsinline></video>
+
+    <div class="circles-container"></div>
+
+    <div class="replay-btn" id="replayBtn"></div>
+
+    <div class="grid-container-circles1">
+      <div class="circles circles1_1"></div>
+      <div class="circles circles1_2"></div>
+      <div class="circles circles1_3"></div>
+      <div class="circles circles1_4"></div>
+      <div class="circles circles1_5"></div>
+      <div class="circles circles1_6"></div>
+      <div class="circles circles1_7"></div>
+      <div class="circles circles1_8"></div>
+      <div class="circles circles1_9"></div>
+    </div>
+
+    <div class="grid-container-circles">
+      <div class="circles1 circles_1"></div>
+      <div class="circles1 circles_2"></div>
+      <div class="circles1 circles_3"></div>
+      <div class="circles1 circles_4"></div>
+      <div class="circles1 circles_5"></div>
+      <div class="circles1 circles_6"></div>
+      <div class="circles1 circles_7"></div>
+      <div class="circles1 circles_8"></div>
+      <div class="circles1 circles_9"></div>
+    </div>
+
+    <div class="spinning-text_1">everybodiesweird</div>
+    <div class="spinning-text_2">everybodiesweird</div>
+    <div class="spinning-text_3">everybodiesweird</div>
+    <div class="spinning-text_4">everybodiesweird</div>
+    <div class="spinning-text_5">everybodiesweird</div>
+    <div class="spinning-text_6">everybodiesweird</div>
+
+    <div class="grid-container">
+      <div class="cell cell-1">e</div>
+      <div class="cell cell-2">v</div>
+      <div class="cell cell-3">e</div>
+      <div class="cell cell-4">r</div>
+      <div class="cell cell-5">y</div>
+    </div>
+
+    <div class="grid2-container">
+      <div class="cell2 cell2-1">b</div>
+      <div class="cell2 cell2-2">o</div>
+      <div class="cell2 cell2-3">d</div>
+      <div class="cell2 cell2-4">i</div>
+      <div class="cell2 cell2-5">e</div>
+      <div class="cell2 cell2-6">s</div>
+    </div>
+
+    <div class="grid3-container">
+      <div class="cell3 cell3-1">w</div>
+      <div class="cell3 cell3-2">e</div>
+      <div class="cell3 cell3-3">i</div>
+      <div class="cell3 cell3-4">r</div>
+      <div class="cell3 cell3-5">d</div>
+    </div>
+
+    <div class="intro-overlay">
+      <div class="intro-word" id="word1">every</div>
+      <div class="intro-word" id="word4">body</div>
+      <div class="intro-word" id="word2">is</div>
+      <div class="intro-word" id="word3">weird</div>
+    </div>
+
+    <!-- NEU: Kamera starten -->
+    <script>
+      /* navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: "user" } })
+        .then((stream) => {
+          document.getElementById("cam").srcObject = stream;
+        })
+        .catch((err) => console.error("Kamera-Fehler:", err));
+
+      const container = document.querySelector(".circles-container");*/
+
+      const constraints = {
+        video: {
+          facingMode: { ideal: "user" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      };
+
+      async function startCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          document.getElementById("cam").srcObject = stream;
+          starteIntro();
+        } catch (err) {
+          console.warn(
+            "Frontkamera fehlgeschlagen, versuche ohne Einschränkung...",
+            err,
+          );
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+            });
+            document.getElementById("cam").srcObject = stream;
+            starteIntro();
+          } catch (err2) {
+            console.error("Kamera komplett nicht verfügbar:", err2);
+          }
+        }
+      }
+
+      function starteIntro() {
+        document.getElementById("word1").classList.add("aktiv");
+        document.getElementById("word2").classList.add("aktiv");
+        document.getElementById("word3").classList.add("aktiv");
+        document.getElementById("word4").classList.add("aktiv");
+      }
+
+      startCamera();
+
+      const container = document.querySelector(".circles-container");
+
+      function createCircle() {
+        const circle = document.createElement("div");
+        circle.classList.add("circle");
+
+        // Zufällige Größe (z.B. 50–250px)
+        const size = Math.random() * 100 + 25;
+        circle.style.width = `${size}px`;
+        circle.style.height = `${size}px`;
+
+        // Zufällige Position (in % vom Viewport)
+        circle.style.left = `${Math.random() * 100}vw`;
+        circle.style.top = `${Math.random() * 100}vh`;
+
+        // Zufällige Animationsdauer für Variation
+        circle.style.animationDuration = `${Math.random() * 1 + 1}s`;
+
+        container.appendChild(circle);
+
+        // Kreis nach Ablauf der Animation wieder entfernen
+        setTimeout(() => {
+          circle.remove();
+        }, 6000);
+      }
+
+      // Alle 300ms einen neuen Kreis erzeugen
+      setInterval(createCircle, 150);
+
+      document
+        .getElementById("replayBtn")
+        .addEventListener("mouseenter", function () {
+          const words = ["word1", "word2", "word3", "word4"];
+          words.forEach((id) => {
+            const el = document.getElementById(id);
+            el.classList.remove("aktiv");
+            void el.offsetWidth; // ← zwingt den Browser die Animation neu zu starten
+            el.classList.add("aktiv");
+          });
+        });
+    </script>
+  </body>
+</html>
