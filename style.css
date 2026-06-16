@@ -47,6 +47,7 @@ body {
   mix-blend-mode: difference;
   z-index: 200;
   cursor: pointer;
+  touch-action: auto;
   transition: transform 0.3s ease;
 }
 
